@@ -23,23 +23,28 @@ public class CPU {
     }
 
     public void executeCycles() {
-        boolean isIdle = runningProcesses.isEmpty();
+        List<Process> processesCopy = new ArrayList<>(runningProcesses);
+        boolean isIdle = true;
 
-        for (Process process : runningProcesses) {
+        for (Process process : processesCopy) {
             process.executeCycle();
             isIdle = isIdle && !process.isProcessing();
 
             if (!process.isProcessing()) {
                 runningProcesses.remove(process);
-                break;
             }
         }
 
-        if (isIdle) {
+        if (isIdle && !runningProcesses.isEmpty()) {
             totalIdleCycles++;
         }
-        totalExecutedCycles++;
+        if (!runningProcesses.isEmpty()) {
+            totalExecutedCycles++;
+        }
     }
+
+
+
 
     public double getUtilization() {
         return 1 - ((double) totalIdleCycles / totalExecutedCycles);
